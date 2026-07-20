@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Смотреть сериал</title>
+  <title>Онлайн плеер</title>
   
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -28,21 +28,24 @@
 </head>
 <body>
 
-  <!-- Контейнер для плеера -->
   <div class="kinobox_player"></div>
 
   <!-- Подключаем скрипт Kinobox -->
   <script src="https://kinobox.tv/kinobox.min.js"></script>
   <script>
-    // Инициализация Telegram WebApp
+    // 1. Инициализируем Telegram WebApp
     if (window.Telegram && window.Telegram.WebApp) {
       window.Telegram.WebApp.ready();
       window.Telegram.WebApp.expand();
     }
 
-    // Инициализация плеера по Kinopoisk ID сериала (1199773 - Игра в кальмара)
+    // 2. Достаем kinopoisk_id из URL (например: site.github.io/?kp=1199773)
+    const urlParams = new URLSearchParams(window.location.search);
+    const kpId = urlParams.get('kp') || '1199773'; // '1199773' как фолбэк по умолчанию
+
+    // 3. Запускаем плеер
     new Kinobox('.kinobox_player', {
-      search: { kinopoisk: '1199773' },
+      search: { kinopoisk: kpId },
       menu: {
         enable: true,
         default: 'players'
