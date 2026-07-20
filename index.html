@@ -4,33 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Telegram Web Player</title>
+    <!-- Подключаем скрипт Telegram WebApp -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Подключаем умный плеер Kinobox -->
+    <script src="https://kinobox.net/kinobox.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; background-color: #000; }
-        body, html { width: 100%; height: 100%; overflow: hidden; display: flex; justify-content: center; align-items: center; }
-        iframe { width: 100%; height: 100%; border: none; }
-        .error { color: #fff; font-family: sans-serif; text-align: center; padding: 20px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #000;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .kinobox_player {
+            width: 100%;
+            height: 100vh;
+        }
+        .error {
+            color: #ff5555;
+            font-family: sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
     </style>
 </head>
 <body>
-    <div id="player-container" style="width: 100%; height: 100%;"></div>
+
+    <div class="kinobox_player"></div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand();
+        tg.expand(); // Разворачиваем шторку в Telegram во весь экран
         tg.ready();
 
+        // Достаём параметры из URL
         const urlParams = new URLSearchParams(window.location.search);
         const tmdbId = urlParams.get('id');
 
-        const container = document.getElementById('player-container');
-
         if (tmdbId) {
-            // Используем рабочий плеер по TMDB ID
-            const iframeUrl = `https://kollama.one/embed/tmdb/${tmdbId}`;
-            container.innerHTML = `<iframe src="${iframeUrl}" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
+            // Запускаем Kinobox с поиском по TMDB
+            new Kinobox('.kinobox_player', {
+                search: { tmdb: tmdbId },
+                menu: {
+                    enable: true, // Включаем выбор источников, если один не работает
+                    default: 'ALLOHO'
+                }
+            }).init();
         } else {
-            container.innerHTML = `<div class="error">⚠️ Ошибка: ID фильма не передан в URL.</div>`;
+            document.querySelector('.kinobox_player').innerHTML = 
+                '<div class="error">⚠️ Ошибка: ID фильма не передан в ссылку.</div>';
         }
     </script>
 </body>
